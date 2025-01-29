@@ -1,9 +1,5 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-
-//set the path for dotenv config file.
-dotenv.config({ path: './.env' });
+import express from 'express';
+import cors from 'cors';
 
 const app = express();
 const prefix = '/api/v1';

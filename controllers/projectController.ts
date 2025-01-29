@@ -1,9 +1,12 @@
+import { ProjectBase, OutgoingProject } from '../interfaces/projects';
 const projectService = require('../services/project');
 
 exports.findAll = async (req, res) => {
     
     try {
-        const projects = await projectService.findAll();
+        const { page = 1, limit = 10, order="ID" } = req.query;
+
+        const projects: [ OutgoingProject ] = await projectService.findAll(page, limit, order);
 
         if (!projects.length) {
             res.status(404).json({
@@ -25,7 +28,7 @@ exports.getById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const project = await project.getById(id);
+        const project = await projectService.getById(id);
 
         if (!project.length) {
             res.status(404).json({
