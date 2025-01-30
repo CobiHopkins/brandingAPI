@@ -1,8 +1,12 @@
 {
+  "name": "branding-api",
+  "version": "0.0.1",
+  "description": "A REST API for the branding website.",
   "dependencies": {
+    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "joi": "^17.13.3",
     "promise-mysql": "^5.2.0"
   }
 }

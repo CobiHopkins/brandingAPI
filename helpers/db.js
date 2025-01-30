@@ -1,7 +1,7 @@
-import mysql from 'promise-mysql';
-import { database } from '../config';
+const mysql = require('promise-mysql');
+const { database } = require('../config');
 
-export const run_query = async (query, values) => {
+exports.run_query = async (query, values) => {
     try {
         const conn = await mysql.createConnection(database);
         let data = await conn.query(query, values);
