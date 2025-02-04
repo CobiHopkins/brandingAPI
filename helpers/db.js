@@ -1,14 +1,15 @@
 const mysql = require('promise-mysql');
-const { database } = require('../config');
+const { databaseInfo } = require('../config');
+const { logger } = require('./logger');
 
 exports.run_query = async (query, values) => {
     try {
-        const conn = await mysql.createConnection(database);
+        const conn = await mysql.createConnection(databaseInfo);
         let data = await conn.query(query, values);
         await conn.end();
         return data;
       } catch (error) {
-        console.error(error, query);
-        throw 'Database query error';
+        logger.error("Database query error", error);
+        return error;
       }
 }

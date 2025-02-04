@@ -5,13 +5,16 @@ const bodyParser = require('body-parser');
 const projectRoutes = require('./routes/projects.js');
 const specialRoutes = require('./routes/special.js');
 
+const { corsInfo } = require('./config');
+
 const app = express();
 const prefix = '/api/v1';
 
 const corsOptions = {
-    origin: "http://localhost:3000",
-    optionsSuccessStatus: 200
+    origin: corsInfo.origin,
+    optionsSuccessStatus: corsInfo.optionsSuccessStatus
 }
+
 app.use(bodyParser.json({ limit: '10mb' }))
 app.use(cors(corsOptions));
 app.use(`${prefix}`, specialRoutes);
