@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { logger } = require('../helpers/logger');
 
 const projectService = require('../services/project');
 const { BaseProjectSchema, CreateProjectSchema, UpdateProjectSchema } = require('../schemas/projects');
@@ -20,8 +21,7 @@ exports.findAll = async (req, res) => {
 
         res.status(200).json( projects );
     } catch (error) {
-        console.error('An error occured during GET: ', error);
-        throw new Error('An error occured during GET.');
+        logger.error('Encountered an error with findAll: ', error);
     }
 
 }
@@ -41,8 +41,7 @@ exports.getById = async (req, res) => {
         res.status(200).json( project )
 
     } catch (error) {
-        console.error('Error during get: ', error);
-        throw new Error('An error occured.');
+        logger.error('Error on findAll Projects: ', error);
     }
 
 }
@@ -90,36 +89,71 @@ exports.createProject = async (req, res) => {
             });
 
     } catch (error) {
-        // TODO: Winston Error Logging.
-
-        console.error('Something went wrong: ', error);
-        throw new Error('Something went wrong.');
+        logger.error('Encountered an error whilst creating project: ', error);
     }
 }
 
 exports.updateProject = async (req, res) => {
-
-    const { id } = req.params;
-    const project = req.body;
-
-    const { error } = await UpdateProjectSchema.validateAsync(project);
-    if (error) {
-        res.status(400)
-            .json({
-                message: error.message
-            })
-        return;
+    try {
+        const { id } = req.params;
+        const project = req.body;
+    
+        const { error } = await UpdateProjectSchema.validateAsync(project);
+        if (error) {
+            res.status(400)
+                .json({
+                    message: error.message
+                })
+            return;
+        }
+        
+        // Find a way to remove this call.
+        const exists = await projectService.getById(id);
+        if (!exists) {
+            res.status(404)
+                .json({
+                    message: 'Project not found'
+                })
+            return;
+        }
+    
+        const updatedProject = {ID: id, ...project};
+        const result = await projectService.updateProject(updatedProject);
+        if (result.affectedRows) {
+            res.status(200)
+                .json({
+                    ID: id,
+                    Created: true
+                });
+            return;
+        }
+    } catch (error) {
+        logger.error('Error whilst updating project: ', error);
     }
-
-    /*
-        TODO:
-        Update the corresponding fields and return an object.
-
-    */
-
 
 }
 
 exports.deleteProject = async (req, res) => {
+    try {
+        const { id } = req.params;
 
+        /*
+        TODO:
+            - Check permissions.
+                - Only a single user should be able to delete projects.
+        */
+    
+        const result = await projectService.deleteProject(id);
+        if (result.affectedRows) {
+            res.status(200)
+                .json({
+                    ID: id,
+                    Deleted: true
+                });
+            
+            return;
+        }
+    } catch (error) {
+        logger.error('Error whilst deleting project.', error);
+    }
 }

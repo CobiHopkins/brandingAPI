@@ -1,5 +1,4 @@
 const projectModel = require('../models/project');
-const { ProjectBase, OutgoingProject } = require('../interfaces/projects');
 
 exports.findAll = async (page, limit, order) => {
     const projects = await projectModel.findAll(page, limit, order);
