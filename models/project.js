@@ -6,6 +6,7 @@ exports.findAll = async (page, limit, order) => {
     const query = "SELECT * FROM projects";
     const values = [order, parseInt(limit), offset]
     const data = await run_query(query, values);
+    
     return data;
 }
 
@@ -33,5 +34,21 @@ exports.deleteProject = async (id) => {
     const query = "DELETE * FROM projects WHERE id = ?";
     const values = [id];
     const data = await run_query(query, values);
+    return data;
+}
+
+exports.findProjectTags = async (id) => {
+    const query = "SELECT * FROM project_tags INNER JOIN tags ON project_tags.tag_id = tags.id WHERE project_tags.project_id = ?;";
+    const values = [id];
+
+    const data = await run_query(query, values);
+    return data;
+}
+
+exports.addProjectTags = async (tags) => {
+    const placeholders = tags.map(() => '(?, ?)').join(', ');
+    const query = `INSERT IGNORE INTO project_tags (project_id, tag_id) VALUES ${placeholders};`;
+
+    const data = await run_query(query, tags.flat());
     return data;
 }

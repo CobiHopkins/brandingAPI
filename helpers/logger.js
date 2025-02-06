@@ -1,16 +1,15 @@
+const { loggingInfo } = require('../config');
 const winston = require('winston');
 require('winston-daily-rotate-file');
 
-const { logging } = require('../config');
-
 exports.logger = winston.createLogger({
-    level: logging.defaultLevel,
+    level: loggingInfo.defaultLevel,
     transports: [
         new winston.transports.DailyRotateFile({
-            filename: logging.filename,
-            datePattern: logging.datePattern,
-            maxSize: logging.maxSize,
-            maxFiles: logging.maxFiles,
+            filename: loggingInfo.filename,
+            datePattern: loggingInfo.datePattern,
+            maxSize: loggingInfo.maxSize,
+            maxFiles: loggingInfo.maxFiles,
             format: winston.format.combine(
                 winston.format.timestamp(),
                 winston.format.json()
@@ -19,7 +18,7 @@ exports.logger = winston.createLogger({
     ],
     exceptionHandlers: [
         new winston.transports.File({
-            filename: logging.exceptionFileName
+            filename: loggingInfo.exceptionFileName
         })
     ]
 });

@@ -1,9 +1,9 @@
 const projectModel = require('../models/project');
 
 exports.findAll = async (page, limit, order) => {
-    const projects = await projectModel.findAll(page, limit, order);
+    const data = await projectModel.findAll(page, limit, order);
 
-    return projects;
+    return data;
 }
 
 exports.getById = async (id) => {
@@ -28,4 +28,17 @@ exports.deleteProject = async (id) => {
     const deletedProject = await projectModel.deleteProject(id);
 
     return deletedProject;
+}
+
+exports.findProjectTags = async (id) => {
+    const data = await projectModel.findProjectTags(id);
+
+    return data;
+}
+
+exports.addProjectTags = async (id, tags) => {
+    const tagData = tags.map(tag => [Number(id), tag.ID]);
+    const data = await projectModel.addProjectTags(tagData);
+
+    return data;
 }
