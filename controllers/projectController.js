@@ -214,7 +214,6 @@ exports.findProjectTags = async (req, res) => {
 
         // Need to figure out how to filter output to schema. Doesn't strictly filter data.
         const { value } = BaseTagSchema.validate(tags);
-        console.log(value);
     
         return res.status(200)
             .json(value);
@@ -247,7 +246,7 @@ exports.addProjectTags = async (req, res) => {
         const tagIds = await TagService.getByName(tags);
 
         const result = await ProjectService.addProjectTags(id, tagIds);
-        console.log(result);
+
         if (!result.affectedRows) {
             logger.info('Failed to add project tags.', [id, tags]);
             return res.status(400)

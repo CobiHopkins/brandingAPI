@@ -1,37 +1,37 @@
-const tagModel = require('../models/tags');
+const TagModel = require('../models/tags');
 
 exports.findAll = async (page, limit, order) => {
-    const data = await tagModel.findAll(page, limit, order);
+    const data = await TagModel.findAll(page, limit, order);
 
     return data;
 }
 
 exports.getById = async (id) => {
-    const data = await tagModel.getById(id);
+    const data = await TagModel.getById(id);
 
     return data;
 }
 
 exports.getByName = async (name) => {
-    const data = await tagModel.getByName(name);
+    const data = await TagModel.getByName(name);
 
     return data;
 }
 
 exports.createTag = async (tag) => {
-    const data = await tagModel.createTag(tag);
+    const data = await TagModel.createTag(tag);
 
     return data;
 }
 
 exports.updateTag = async (tag) => {
-    const data = await tagModel.updateTag(tag);
+    const data = await TagModel.updateTag(tag);
 
     return data;
 }
 
 exports.deleteTag = async (id) => {
-    const data = await tagModel.deleteTag(id);
+    const data = await TagModel.deleteTag(id);
 
     return data;
 }
