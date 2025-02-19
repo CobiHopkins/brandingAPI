@@ -22,13 +22,13 @@ exports.findAll = async (req, res) => {
         }
 
         const projects = data.map(project => {
-            const { ID, title, description, url, dateRegistered, dateUpdated } = project;
+            const { ID, title, description, githubUrl, imageUrl, websiteUrl, trelloUrl, dateRegistered, dateUpdated } = project;
     
             const links = {
                 tags: `${req.protocol}://${req.get('host')}${req.originalUrl}/${ID}/tags`
             }
 
-            return { ID, title, description, url, dateRegistered, dateUpdated, links }
+            return { ID, title, description, githubUrl, imageUrl, websiteUrl, trelloUrl, dateRegistered, dateUpdated, links }
         });
 
         return res.status(200).json( projects );
