@@ -13,7 +13,9 @@ exports.BaseProjectSchema = Joi.object({
     description: Joi.string()
         .min(10)
         .required(),
-
+    content: Joi.string()
+        .min(10)
+        .required(),
     tags: Joi.array()
         .items(
             Joi.string()
@@ -22,13 +24,19 @@ exports.BaseProjectSchema = Joi.object({
                 .required()
         )
         .single()
-        .min(1)
-        .required(),
+        .min(1),
     
-    url: Joi.string()
+    githubUrl: Joi.string()
         .uri()
         .pattern(/^https:\/\/github\.com(\/[\w\-]*)*$/) 
-        .required()
+        .required(),
+    imageUrl: Joi.string()
+        .uri(),
+    websiteUrl: Joi.string()
+        .uri(),
+    trelloUrl: Joi.string()
+        .uri()
+        .pattern(/^https:\/\/trello\.com(\/[\w\-]*)*$/)
 });
 
 exports.CreateProjectSchema = exports.BaseProjectSchema.keys({
@@ -36,7 +44,7 @@ exports.CreateProjectSchema = exports.BaseProjectSchema.keys({
 });  
 
 exports.UpdateProjectSchema = exports.BaseProjectSchema.fork(
-    ['title', 'description', 'url'], (schema) => schema.optional())
+    ['title', 'description', 'githubUrl', 'trelloUrl', 'websiteUrl', 'imageUrl'], (schema) => schema.optional())
     .keys({ 
         id: Joi.forbidden(),
         tags: Joi.forbidden()

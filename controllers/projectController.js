@@ -1,4 +1,5 @@
 const { logger } = require('../helpers/logger');
+const Joi = require('joi');
 
 const ProjectService = require('../services/project');
 const TagService = require('../services/tags');
@@ -13,7 +14,6 @@ exports.findAll = async (req, res) => {
         const { page = 1, limit = 10, order="ID" } = req.query;
 
         const data = await ProjectService.findAll(page, limit, order);
-
         if (!data.length) {
             return res.status(404)
                 .json({
@@ -22,13 +22,13 @@ exports.findAll = async (req, res) => {
         }
 
         const projects = data.map(project => {
-            const { ID, title, description, githubUrl, imageUrl, websiteUrl, trelloUrl, dateRegistered, dateUpdated } = project;
+            const { ID, title, description, githubUrl, imageUrl, websiteUrl, trelloUrl, content, dateRegistered, dateUpdated } = project;
     
             const links = {
                 tags: `${req.protocol}://${req.get('host')}${req.originalUrl}/${ID}/tags`
             }
 
-            return { ID, title, description, githubUrl, imageUrl, websiteUrl, trelloUrl, dateRegistered, dateUpdated, links }
+            return { ID, title, description, githubUrl, imageUrl, websiteUrl, trelloUrl, content, dateRegistered, dateUpdated, links }
         });
 
         return res.status(200).json( projects );
@@ -77,14 +77,7 @@ exports.createProject = async (req, res) => {
     try {
 
         const project = req.body;
-        const { error } = await CreateProjectSchema.validateAsync(project);
-
-        if (error) {
-            return res.status(400)
-                .json({
-                    message: error.message
-            });
-        }
+        await CreateProjectSchema.validateAsync(project);
 
         const {tags, ...newProject} = project;
 
@@ -96,22 +89,18 @@ exports.createProject = async (req, res) => {
             });
         }
 
-        /*
-            TODO:
-                Check if the values in tags already exist.
-                Create new ones if they do not already exist.
-                Add a record in project_tags linking a project with a tag via tag name.
-
-                if tagging encounters an error, log and return error.
-        */
-
-        return res.status(200)
+        return res.status(201)
             .json({
                 ID: result.insertId,
                 Created: true
             });
 
     } catch (error) {
+        
+        if(error.isJoi) {
+            return res.status(400).json({message: error.message});
+        }
+
         logger.error('Encountered an error whilst creating project: ', error);
         return res.status(500)
             .json({
@@ -243,15 +232,21 @@ exports.addProjectTags = async (req, res) => {
         }
 
         //Get tags and their associated ids;
-        const tagIds = await TagService.getByName(tags);
+        const tagId = await TagService.getByName(tags);
+        if (!tagId) {
+            return res.status(400)
+                .json({
+                    message: 'Invalid tag name.'
+                });
+        }
 
-        const result = await ProjectService.addProjectTags(id, tagIds);
+        const result = await ProjectService.addProjectTags(id, tagId);
 
         if (!result.affectedRows) {
             logger.info('Failed to add project tags.', [id, tags]);
             return res.status(400)
                 .json({
-                    message: 'Something went wrong.'
+                    message: 'Failed to add project tags.'
                 });
         }
 
@@ -259,6 +254,7 @@ exports.addProjectTags = async (req, res) => {
             .json({
                 ID: id,
                 Created: true
+                //Need to add a link to the resource.
             });
 
     } catch (error) {

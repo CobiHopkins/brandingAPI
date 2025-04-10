@@ -6,10 +6,10 @@ const projectRoutes = require('./routes/projects.js');
 const specialRoutes = require('./routes/special.js');
 const tagRoutes = require('./routes/tags.js');
 
-const { corsInfo } = require('./config');
+const { corsInfo, serverInfo } = require('./config');
 
 const app = express();
-const prefix = '/api/v1';
+const prefix = `/api/v${serverInfo.apiVersion}`;
 
 const corsOptions = {
     origin: corsInfo.origin,

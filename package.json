@@ -2,13 +2,38 @@
   "name": "branding-api",
   "version": "0.0.1",
   "description": "A REST API for the branding website.",
+  "scripts": {
+    "test": "cross-env DB_DATABASE=test_db jest --testTimeout=10000",
+    "test:watch": "cross-env DB_DATABASE=test_db jest --watch",
+    "testDB:drop": "bash -c 'mysql --user=root --password=\"@Password\" --execute=\"DROP DATABASE IF EXISTS test_db;\"'",
+    "testDB:create": "bash -c 'mysql --user=root --password=\"@Password\" --execute=\"CREATE DATABASE test_db;\"'",
+    "testDB:migrate": "bash -c 'echo Migrating... && mysqldump --user=root --password=\"@Password\" branding | mysql --user=root --password=\"@Password\" test_db && echo Migration completed!'",
+    "pretest": "npm run testDB:drop && npm run testDB:create && npm run testDB:migrate"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "path": "^0.12.7",
     "promise-mysql": "^5.2.0",
+    "serve": "^14.2.4",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }
