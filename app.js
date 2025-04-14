@@ -16,6 +16,8 @@ const corsOptions = {
     optionsSuccessStatus: corsInfo.optionsSuccessStatus
 }
 
+console.log(prefix);
+
 app.use(bodyParser.json({ limit: '10mb' }))
 app.use(cors(corsOptions));
 app.use(`${prefix}`, specialRoutes);
