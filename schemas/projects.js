@@ -47,6 +47,7 @@ exports.UpdateProjectSchema = exports.BaseProjectSchema.fork(
     ['title', 'description', 'githubUrl', 'trelloUrl', 'websiteUrl', 'imageUrl'], (schema) => schema.optional())
     .keys({ 
         id: Joi.forbidden(),
-        tags: Joi.forbidden()
+        tags: Joi.forbidden(),
+        content: Joi.string().optional()
      })
      .min(1);

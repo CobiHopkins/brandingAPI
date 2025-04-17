@@ -25,15 +25,17 @@ exports.createProject = async (project) => {
 
 exports.updateProject = async (project) => {
     const query = "UPDATE projects SET ? WHERE id = ?";
-    const values = [project, project.id];
+    const values = [project, project.ID];
     const data = await run_query(query, values);
+
     return data;
 }
 
 exports.deleteProject = async (id) => {
-    const query = "DELETE * FROM projects WHERE id = ?";
+    const query = "DELETE FROM projects WHERE ID = ?";
     const values = [id];
     const data = await run_query(query, values);
+
     return data;
 }
 

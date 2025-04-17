@@ -14,7 +14,7 @@ exports.getById = async (id) => {
 
 exports.getByName = async (name) => {
     const data = await TagModel.getByName(name);
-
+    
     return data;
 }
 

@@ -114,17 +114,11 @@ exports.updateProject = async (req, res) => {
         const { id } = req.params;
         const project = req.body;
     
-        const { error } = UpdateProjectSchema.validateAsync(project);
-        if (error) {
-            return res.status(400)
-                .json({
-                    message: error.message
-                })
-        }
+        await UpdateProjectSchema.validateAsync(project);
         
         // Find a way to remove this call.
         const exists = await ProjectService.getById(id);
-        if (!exists) {
+        if (Array.isArray(exists) && exists.length == 0) {
             return res.status(404)
                 .json({
                     message: 'Project not found'
@@ -133,15 +127,27 @@ exports.updateProject = async (req, res) => {
     
         const updatedProject = {ID: id, ...project};
         const result = await ProjectService.updateProject(updatedProject);
-        if (result.affectedRows) {
-            return res.status(200)
+        if (!result.affectedRows) {
+            return res.status(400)
                 .json({
-                    ID: id,
-                    name: updatedProject.name,
+                    message: 'something went wrong'
+            })
+        }
+
+        return res.status(200)
+                .json({
+                    ID: Number(id),
+                    name: updatedProject.title,
                     Created: true
                 });
-        }
+
     } catch (error) {
+        if (error.isJoi) {
+            return res.status(400)
+                .json({
+                    message: error.message
+            })
+        }
         logger.error('Error whilst updating project: ', error);
         return res.status(500)
             .json({
@@ -160,17 +166,22 @@ exports.deleteProject = async (req, res) => {
             - Check permissions.
                 - Only a single user should be able to delete projects.
         */
+
+        const exists = await ProjectService.getById(id);
+        if (Array.isArray(exists) && exists.length == 0) {
+            return res.status(404).end();
+        }
     
         const result = await ProjectService.deleteProject(id);
-        if (result.affectedRows) {
-            return res.status(200)
+        if (!result.affectedRows) {
+            return res.statusCode(500).end();
+        }
+        
+        return res.status(200)
                 .json({
-                    ID: id,
+                    ID: Number(id),
                     Deleted: true
                 });
-            
-            return;
-        }
     } catch (error) {
         logger.error('Error whilst deleting project.', error);
         return res.status(500)
@@ -224,35 +235,45 @@ exports.addProjectTags = async (req, res) => {
         const { tags } = req.body;
 
         const exists = await ProjectService.getById(id);
-        if (!exists) {
+        if (Array.isArray(exists) && exists.length == 0) {
             return res.status(404)
                 .json({
                     message: 'Project not found.'
                 });
         }
 
-        //Get tags and their associated ids;
-        const tagId = await TagService.getByName(tags);
-        if (!tagId) {
-            return res.status(400)
-                .json({
-                    message: 'Invalid tag name.'
-                });
+        let invalidTags = [];
+        let validTags = [];
+
+        for (let tag of tags) {
+            const valid = await TagService.getByName(tag);
+
+            if (Array.isArray(valid) && valid.length > 0) {
+                validTags.push(...valid);
+            } else {
+                invalidTags.push(valid);
+            }
         }
 
-        const result = await ProjectService.addProjectTags(id, tagId);
+        if (invalidTags.length > 0) {
+            return res.status(400).json({
+                message: 'Some tags are invalid.'
+            })
+        }
+
+        const result = await ProjectService.addProjectTags(id, validTags);
 
         if (!result.affectedRows) {
             logger.info('Failed to add project tags.', [id, tags]);
             return res.status(400)
                 .json({
-                    message: 'Failed to add project tags.'
+                    message: 'Tags already exist.'
                 });
         }
 
-        return res.status(200)
+        return res.status(201)
             .json({
-                ID: id,
+                ID: Number(id),
                 Created: true
                 //Need to add a link to the resource.
             });

@@ -25,7 +25,6 @@ exports.getByName = async (name) => {
     const values = name.length <= 1 ? [name] : name;
 
     const data = await run_query(query, values);
-    console.log(data);
     return data;
 }
 
