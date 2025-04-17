@@ -4,7 +4,6 @@ const UserModel = require('../models/user');
 const bcrypt = require('bcrypt');
 const { basicInfo } = require('../config');
 
-const saltRounds = basicInfo.saltRounds;
 
 const validatePassword = async (user, password) => {
     /**

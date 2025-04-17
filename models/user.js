@@ -10,7 +10,7 @@ exports.findAll = async (page, limit, order) => {
     let offset = limit * (page-1); //Used for pagination.
     let query = "SELECT ID, role_id, firstName, lastName, username, about, email, avatarURL FROM users ORDER BY ? LIMIT ? OFFSET ?;"; //Probably don't want to be getting password / password salt.
     let values = [order, parseInt(limit), offset]; //Limit tends to pass in as string not int causing an error.
-    let data = await db.run_query(query, values);
+    let data = await run_query(query, values);
     return data;
 }
 
@@ -36,7 +36,7 @@ exports.getByEmail = async (email) => {
     */
     let query = "SELECT ID, role_id, firstName, lastName, username, about, email, avatarURL FROM users WHERE email = ?;";
     let values = [email];
-    let data = await db.run_query(query, values);
+    let data = await run_query(query, values);
     return data;
 }
   
@@ -50,7 +50,7 @@ exports.updateUser = async (user) => {
     */
     let query = "UPDATE users SET ? WHERE ID = ?;";
     let values = [user, user.ID];
-    let data = await db.run_query(query, values);
+    let data = await run_query(query, values);
     return data;
 }
   
@@ -69,6 +69,6 @@ exports.getByUsername = async (username) => {
 
     let query = "SELECT * FROM users WHERE username = ?;";
     let values = [username];
-    let data = await db.run_query(query, values);
+    let data = await run_query(query, values);
     return data;
 }

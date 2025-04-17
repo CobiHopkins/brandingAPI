@@ -6,7 +6,7 @@ const { jwtInfo } = require('../config');
 
 let options = {
     jwtFromRequest: extractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: jwtInfo.secret_key,
+    secretOrKey: process.env.jwt_secret_key,
     algorithm: [jwtInfo.algorithm]
 }
 
@@ -17,7 +17,7 @@ const verifyJwt = async (payload, done) => {
         return done(null, false)
     }
     
-    return done(null, false);
+    return done(null, user);
 }
 
 const strategy = new jwtStrategy(options, verifyJwt);
