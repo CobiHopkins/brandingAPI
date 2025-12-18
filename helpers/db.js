@@ -1,40 +1,38 @@
 const mysql = require('promise-mysql');
-const { databaseInfo } = require('../config');
 const { logger } = require('./logger');
 
+
 const pool = mysql.createPool({
-            host: DB_HOST,
-            user: DB_USER,
-            password: DB_PASSWORD,
-            database: DB_NAME,
-            port: DB_PORT,
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
             connectionLimit: 10
         });
 
-// needs testing and comparison for performance
+/**
+ * Executes a SQL query against the database using a connection pool.
+ * 
+ * @param {*} query   SQL Query to be executed.
+ * @param {*} values  Values to be escaped in the query.
+ * @returns {}  Result of the query.
+ * 
+ * @example
+ *  const result = await run_query('SELECT * FROM projects WHERE id = ?', [projectId]);
+ * 
+ */
 exports.run_query = async (query, values) => {
+    let conn;
     try {
-      
-        const conn = await pool.getConnection();
-        let [data] = await conn.query(query, values);
+        conn = (await pool).getConnection();
+        const data = (await conn).query(query, values);
         return data;
 
       } catch (error) {
         logger.error("Database query error", error);
         throw error;
       } finally {
-        if (conn) conn.release();
+        if (conn) (await conn).release();
       }
 }
-
-// exports.run_query = async (query, values) => {
-//     try {
-//         const conn = await mysql.createConnection(databaseInfo);
-//         let data = await conn.query(query, values);
-//         await conn.end();
-//         return data;
-//       } catch (error) {
-//         logger.error("Database query error", error);
-//         return error;
-//       }
-// }
