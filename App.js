@@ -4,9 +4,9 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { rateLimit } = require('express-rate-limit');
 
-const ProjectRoutes = require('./routes/ProjectRoutes');
-const SpecialRoutes = require('./routes/SpecialRoutes');
-const TagRoutes = require('./routes/TagRoutes')
+const ProjectRoutes = require('./src/routes/ProjectRoutes');
+const SpecialRoutes = require('./src/routes/SpecialRoutes');
+const TagRoutes = require('./src/routes/TagRoutes')
 
 const { corsInfo, serverInfo } = require('./config');
 

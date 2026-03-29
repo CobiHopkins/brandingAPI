@@ -1,9 +1,12 @@
+import { ProjectResponse } from "../common/response/Projects";
+import { Request } from "express";
+
 const { date } = require("joi");
 
-const serializeProjects = (project, req) => {
+const serializeProjects = ({project, req}: { project: ProjectResponse, req: Request}) => {
     const {
-        ID,
-        title,
+        id,
+        name,
         description,
         githubUrl,
         imageUrl,
@@ -14,13 +17,9 @@ const serializeProjects = (project, req) => {
         dateUpdated
     } = project;
 
-    const links = {
-        tags: `${req.protocol}://${req.get('host')}${req.baseUrl}${req.path.replace(/\/$/, '')}/${ID}`
-    }
-
     return {
-        ID,
-        title,
+        id,
+        name,
         description,
         githubUrl,
         imageUrl,
@@ -28,8 +27,7 @@ const serializeProjects = (project, req) => {
         trelloUrl,
         content,
         dateRegistered,
-        dateUpdated,
-        links
+        dateUpdated
     }
 }
 

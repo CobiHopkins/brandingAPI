@@ -22,7 +22,7 @@ const pool = mysql.createPool({
  *  const result = await run_query('SELECT * FROM projects WHERE id = ?', [projectId]);
  * 
  */
-exports.run_query = async (query, values) => {
+export const run_query = async ({query, values}: {query: string, values: any[]}) => {
     let conn;
     try {
         conn = (await pool).getConnection();
